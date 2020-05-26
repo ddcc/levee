@@ -642,8 +642,7 @@ int internal_prctl(int option, uptr arg2, uptr arg3, uptr arg4, uptr arg5) {
   return syscall(__NR_prctl, option, arg2, arg3, arg4, arg5);
 }
 
-int internal_sigaltstack(const struct sigaltstack *ss,
-                         struct sigaltstack *oss) {
+int internal_sigaltstack(const void *ss, void *oss) {
   return syscall(__NR_sigaltstack, ss, oss);
 }
 

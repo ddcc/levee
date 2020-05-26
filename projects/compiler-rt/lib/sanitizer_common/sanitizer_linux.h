@@ -16,8 +16,6 @@
 #include "sanitizer_common.h"
 #include "sanitizer_internal_defs.h"
 
-struct sigaltstack;
-
 namespace __sanitizer {
 // Dirent structure for getdents(). Note that this structure is different from
 // the one in <dirent.h>, which is used by readdir().
@@ -26,7 +24,7 @@ struct linux_dirent;
 // Syscall wrappers.
 int internal_getdents(fd_t fd, struct linux_dirent *dirp, unsigned int count);
 int internal_prctl(int option, uptr arg2, uptr arg3, uptr arg4, uptr arg5);
-int internal_sigaltstack(const struct sigaltstack *ss, struct sigaltstack *oss);
+int internal_sigaltstack(const void *ss, void *oss);
 
 // This class reads thread IDs from /proc/<pid>/task using only syscalls.
 class ThreadLister {
