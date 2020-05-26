@@ -523,6 +523,9 @@ namespace llvm {
   /// createSafeStackInserterPass - This pass adds the safe stack to functions.
   Pass *createSafeStackInserterPass(const TargetLoweringBase *tli);
 
+  /// createSimpleSFIPass - This pass adds simple SFI protection for CPI/CPS.
+  Pass *createSimpleSFIPass();
+
   /// createCPIPass - This pass adds FCFI protectors
   /// for all function pointers.
   Pass *createCPIPass();

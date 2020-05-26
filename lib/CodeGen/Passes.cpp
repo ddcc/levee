@@ -427,6 +427,8 @@ void TargetPassConfig::addISelPrepare() {
   addPass(createSafeStackInserterPass(getTargetLowering()));
   addPass(createStackProtectorPass(getTargetLowering()));
 
+  addPass(createSimpleSFIPass());
+
   addPreISel();
 
   if (PrintISelInput)

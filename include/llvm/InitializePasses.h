@@ -245,6 +245,7 @@ void initializeSlotIndexesPass(PassRegistry&);
 void initializeSpillPlacementPass(PassRegistry&);
 void initializeStackProtectorPass(PassRegistry&);
 void initializeSafeStackInserterPass(PassRegistry&);
+void initializeSimpleSFIPass(PassRegistry&);
 void initializeCPIPreparePass(PassRegistry&);
 void initializeCPIPass(PassRegistry&);
 void initializeStackColoringPass(PassRegistry&);

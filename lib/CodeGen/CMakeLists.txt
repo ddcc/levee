@@ -110,6 +110,7 @@ add_llvm_library(LLVMCodeGen
   UnreachableBlockElim.cpp
   VirtRegMap.cpp
   SafeStack.cpp
+  SimpleSFI.cpp
   CPI.cpp
   )
 
