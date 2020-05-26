@@ -21,6 +21,7 @@
 #include "sanitizer_common/sanitizer_libc.h"
 #include "sanitizer_common/sanitizer_procmaps.h"
 
+#include <signal.h>
 #include <sys/time.h>
 #include <sys/resource.h>
 #include <sys/mman.h>
