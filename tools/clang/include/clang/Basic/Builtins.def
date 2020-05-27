@@ -936,5 +936,8 @@ BUILTIN(__builtin_subc, "UiUiCUiCUiCUi*", "n")
 BUILTIN(__builtin_subcl, "ULiULiCULiCULiCULi*", "n")
 BUILTIN(__builtin_subcll, "ULLiULLiCULLiCULLiCULLi*", "n")
 
+// Clang builtins (not available in GCC).
+BUILTIN(__builtin_addressof, "v*v&", "nct")
+
 #undef BUILTIN
 #undef LIBBUILTIN

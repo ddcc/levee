@@ -1421,6 +1421,8 @@ RValue CodeGenFunction::EmitBuiltinExpr(const FunctionDecl *FD,
     CarryOutStore->setAlignment(CarryOutPtr.second);
     return RValue::get(Sum2);
   }
+  case Builtin::BI__builtin_addressof:
+    return RValue::get(EmitLValue(E->getArg(0)).getAddress());
   case Builtin::BI__noop:
     return RValue::get(0);
   }
