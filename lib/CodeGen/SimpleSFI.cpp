@@ -54,7 +54,7 @@ namespace {
   public:
     static char ID; // Pass identification, replacement for typeid.
     SimpleSFI(): FunctionPass(ID) {
-      initializeSafeStackInserterPass(*PassRegistry::getPassRegistry());
+      initializeSimpleSFIPass(*PassRegistry::getPassRegistry());
     }
   };
 } // end anonymous namespace
