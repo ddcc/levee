@@ -420,9 +420,14 @@ static ld_plugin_status all_symbols_read_hook(void) {
     if (options::generate_bc_file == options::BC_ONLY)
       exit(0);
   }
-  const char *objPath;
-  if (lto_codegen_compile_to_file(code_gen, &objPath)) {
-    (*message)(LDPL_ERROR, "Could not produce a combined object file\n");
+
+  std::string ObjPath;
+  {
+    const char *Temp;
+    if (lto_codegen_compile_to_file(code_gen, &Temp)) {
+      (*message)(LDPL_ERROR, "Could not produce a combined object file\n");
+    }
+    ObjPath = Temp;
   }
 
   if (options::generate_bc_file == options::BC_ALSO) {
@@ -445,9 +450,9 @@ static ld_plugin_status all_symbols_read_hook(void) {
     }
   }
 
-  if ((*add_input_file)(objPath) != LDPS_OK) {
+  if ((*add_input_file)(ObjPath.c_str()) != LDPS_OK) {
     (*message)(LDPL_ERROR, "Unable to add .o file to the link.");
-    (*message)(LDPL_ERROR, "File left behind in: %s", objPath);
+    (*message)(LDPL_ERROR, "File left behind in: %s", ObjPath.c_str());
     return LDPS_ERR;
   }
 
@@ -458,7 +463,7 @@ static ld_plugin_status all_symbols_read_hook(void) {
   }
 
   if (options::obj_path.empty())
-    Cleanup.push_back(sys::Path(objPath));
+    Cleanup.push_back(sys::Path(ObjPath));
 
   return LDPS_OK;
 }
