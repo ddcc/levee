@@ -128,6 +128,11 @@ bool SimpleSFI::runOnFunction(Function &F) {
       if (!Ptr || isa<Constant>(Ptr))
         continue;
 
+      // Assume that inline assembly refers to non-0 address spaces
+      if (CallInst *CI = dyn_cast<CallInst>(Ptr))
+        if (CI->isInlineAsm())
+          continue;
+
       // Find a suitable insertion point
       Instruction *InsertPt;
       if (isa<Instruction>(Ptr)) {
@@ -148,14 +153,25 @@ bool SimpleSFI::runOnFunction(Function &F) {
       // that we can use replaceAllUsesWith on Ptr alter.
 
       Instruction *FirstInst;
-      Value *MaskedPtr = UndefValue::get(Ptr->getType());
 
-      MaskedPtr = FirstInst = IRB.Insert(
-            CastInst::Create(Instruction::PtrToInt, MaskedPtr, IntPtrTy));
+      Type *Ty = Ptr->getType();
+      Value *MaskedPtr = UndefValue::get(Ty);
+      if (Ty->isPointerTy()) {
+        MaskedPtr = FirstInst = IRB.Insert(
+          CastInst::Create(Instruction::PtrToInt, MaskedPtr, IntPtrTy));
+      } else {
+        MaskedPtr = FirstInst = IRB.Insert(
+          CastInst::Create(Instruction::BitCast, MaskedPtr, IntPtrTy));
+      }
 
       MaskedPtr = IRB.CreateAnd(MaskedPtr, IRB.getInt64((1ull<<46) - 1));
-      MaskedPtr = IRB.CreateIntToPtr(MaskedPtr, Ptr->getType(),
-                                     Twine("masked.") + Ptr->getName());
+      if (Ty->isPointerTy()) {
+        MaskedPtr = IRB.CreateIntToPtr(MaskedPtr, Ptr->getType(),
+                                       Twine("masked.") + Ptr->getName());
+      } else {
+        MaskedPtr = IRB.CreatePointerCast(MaskedPtr, Ptr->getType(),
+                                          Twine("masked.") + Ptr->getName());
+      }
       Ptr->replaceAllUsesWith(MaskedPtr);
       FirstInst->setOperand(0, Ptr);
 
