@@ -27,6 +27,7 @@
 #include "llvm/ADT/Statistic.h"
 #include "llvm/ADT/PostOrderIterator.h"
 #include "llvm/ADT/DenseSet.h"
+#include "llvm/ADT/SmallVector.h"
 
 using namespace llvm;
 
@@ -133,51 +134,73 @@ bool SimpleSFI::runOnFunction(Function &F) {
         if (CI->isInlineAsm())
           continue;
 
+      bool isTerminator = false;
+      SmallVector<Instruction *, 2> InsertPts;
       // Find a suitable insertion point
-      Instruction *InsertPt;
-      if (isa<Instruction>(Ptr)) {
-        InsertPt = cast<Instruction>(Ptr)->getNextNode();
+      if (Instruction *II = dyn_cast<Instruction>(Ptr)) {
+        if (II->isTerminator()) {
+          isTerminator = true;
+          for (Value::use_iterator UI = II->use_begin(), UE = II->use_end(); UI != UE; ++UI) {
+            if (Instruction *UII = dyn_cast<Instruction>(*UI))
+              InsertPts.push_back(UII);
+          }
+        } else
+          InsertPts.push_back(II->getNextNode());
       } else if (isa<Argument>(Ptr)) {
-        InsertPt = F.getEntryBlock().getFirstNonPHIOrDbgOrLifetime();
+        InsertPts.push_back(F.getEntryBlock().getFirstNonPHIOrDbgOrLifetime());
       } else {
         llvm_unreachable(
               "A pointer must be either instruction or constant or argument.");
       }
 
-      while (isa<AllocaInst>(InsertPt) || isa<PHINode>(InsertPt))
-        InsertPt = InsertPt->getNextNode();
+      IRBuilder<> IRB(F.getContext());
+      while (InsertPts.empty()) {
+        Instruction *V = InsertPts.pop_back_val(), *InsertPt = V;
+        while (isa<AllocaInst>(InsertPt) || isa<PHINode>(InsertPt))
+          InsertPt = InsertPt->getNextNode();
 
-      IRBuilder<> IRB(InsertPt);
+        IRB.SetInsertPoint(InsertPt);
 
-      // We create the masking operation using undef value at first, so
-      // that we can use replaceAllUsesWith on Ptr alter.
+        // We create the masking operation using undef value at first, so
+        // that we can use replaceAllUsesWith on Ptr alter.
 
-      Instruction *FirstInst;
+        Instruction *FirstInst;
 
-      Type *Ty = Ptr->getType();
-      Value *MaskedPtr = UndefValue::get(Ty);
-      if (Ty->isPointerTy()) {
-        MaskedPtr = FirstInst = IRB.Insert(
-          CastInst::Create(Instruction::PtrToInt, MaskedPtr, IntPtrTy));
-      } else {
-        MaskedPtr = FirstInst = IRB.Insert(
-          CastInst::Create(Instruction::BitCast, MaskedPtr, IntPtrTy));
+        Type *Ty = Ptr->getType();
+        Value *MaskedPtr = UndefValue::get(Ty);
+        if (Ty->isPointerTy()) {
+          MaskedPtr = FirstInst = IRB.Insert(
+            CastInst::Create(Instruction::PtrToInt, MaskedPtr, IntPtrTy));
+        } else {
+          MaskedPtr = FirstInst = IRB.Insert(
+            CastInst::Create(Instruction::BitCast, MaskedPtr, IntPtrTy));
+        }
+
+        MaskedPtr = IRB.CreateAnd(MaskedPtr, IRB.getInt64((1ull<<46) - 1));
+        if (Ty->isPointerTy()) {
+          MaskedPtr = IRB.CreateIntToPtr(MaskedPtr, Ptr->getType(),
+                                         Twine("masked.") + Ptr->getName());
+        } else {
+          MaskedPtr = IRB.CreatePointerCast(MaskedPtr, Ptr->getType(),
+                                            Twine("masked.") + Ptr->getName());
+        }
+
+        if (isTerminator) {
+          for (Value::use_iterator UI = Ptr->use_begin(), UE = Ptr->use_end(); UI != UE; ++UI) {
+            if (*UI == V) {
+              V->setOperand(UI.getOperandNo(), MaskedPtr);
+              break;
+            }
+          }
+
+        } else
+          Ptr->replaceAllUsesWith(MaskedPtr);
+        FirstInst->setOperand(0, Ptr);
+
+        MaskedPointers.insert(MaskedPtr);
+        ++NumMasksInserted;
+        Changed = true;
       }
-
-      MaskedPtr = IRB.CreateAnd(MaskedPtr, IRB.getInt64((1ull<<46) - 1));
-      if (Ty->isPointerTy()) {
-        MaskedPtr = IRB.CreateIntToPtr(MaskedPtr, Ptr->getType(),
-                                       Twine("masked.") + Ptr->getName());
-      } else {
-        MaskedPtr = IRB.CreatePointerCast(MaskedPtr, Ptr->getType(),
-                                          Twine("masked.") + Ptr->getName());
-      }
-      Ptr->replaceAllUsesWith(MaskedPtr);
-      FirstInst->setOperand(0, Ptr);
-
-      MaskedPointers.insert(MaskedPtr);
-      ++NumMasksInserted;
-      Changed = true;
     }
   }
   return Changed;
