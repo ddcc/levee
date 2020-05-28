@@ -62,11 +62,7 @@ typedef struct {
 // =============================================
 extern int __llvm__cpi_inited;
 
-#if defined(__FreeBSD__) || defined(__APPLE__)
-# define IMM_MODE "er"
-#else
-# define IMM_MODE "ir"
-#endif
+#define IMM_MODE "er"
 
 # define __CPI_TBL_GET(off)    \
   ({ size_t val;                \
