@@ -29,23 +29,19 @@ void __llvm__cpi_realloc(unsigned char *fptr_new, unsigned long size_new,
         return;
     } else if (fptr_old == fptr_new) {
 #ifdef CPI_DELETE_ON_FREE
-        /*
         if (size_new < size_old) // shrink
             __llvm__cpi_delete_range(fptr_old + size_new, size_old - size_new);
-        */
 #endif
 #ifdef CPI_DELETE_ON_ALLOC
-        /*
         if (size_new > size_old) // enlarge
             __llvm__cpi_delete_range(fptr_old + size_new, size_old - size_new);
-        */
 #endif
     } else { // data was moved
         __llvm__cpi_move_range(fptr_new, fptr_old,
                                size_old < size_new ? size_old : size_new);
 #ifdef CPI_DELETE_ON_FREE
         // FIXME: need to check for overlap
-        //__llvm__cpi_delete_range(fptr_old, size_old);
+        __llvm__cpi_delete_range(fptr_old, size_old);
 #endif
     }
 }

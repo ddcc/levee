@@ -34,7 +34,7 @@
 #endif
 #define CPI_DO_DELETE      // Clean arrays on free/bzero/calloc/etc.
 #define CPI_DELETE_ON_ALLOC
-//#define CPI_DELETE_ON_FREE
+#define CPI_DELETE_ON_FREE
 
 // #define CPI_PROFILE_STATS  // Enable profiling statistics
 
