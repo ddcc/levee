@@ -11,7 +11,7 @@
 // #define CPI_BOUNDS      // CPS or CPI
 //#define CPI_LOOKUP_TABLE   // Hash- or lookup-table?
 #define CPI_SIMPLE_TABLE
-// #define CPI_USE_HUGETLB
+#define CPI_USE_HUGETLB
 
 #if !defined(CPI_LOOKUP_TABLE) && !defined(CPI_SIMPLE_TABLE)
 # define CPI_ST_STATIC      // Allocate lookup/hash table statically
