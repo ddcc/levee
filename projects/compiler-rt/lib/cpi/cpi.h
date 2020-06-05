@@ -27,7 +27,7 @@
 
 // #define CPI_DEBUG       // Debug output
 // #define CPI_NOINLINE       // Disable inlining
-// #define CPI_NOFAIL      // Ignore failures
+#define CPI_NOFAIL      // Ignore failures
 // #define CPI_BOUNDS_NOFAIL      // Ignore bounds failures
 #if defined(__FreeBSD__)
 # define CPI_VERBOSE_ERRORS // Show details on CPS/CPI failures

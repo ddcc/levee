@@ -60,13 +60,12 @@ __CPI_EXPORT __CPI_NOINLINE
     void __llvm__cpi_assert_fail() {
 #endif
 #ifdef CPI_NOFAIL
-  ++__llvm__cpi_num_fails;
+  if (!__llvm__cpi_num_fails++)
+    fprintf(stderr, "CPI check fail\n");
 #else
 # ifdef CPI_VERBOSE_ERRORS
   fprintf(stderr, "CPI check fail at %s:\n", loc);
   __llvm__cpi_dump(fptr);
-# else
-  fprintf(stderr, "CPI check fail\n");
 # endif
   abort();
 #endif
@@ -85,14 +84,13 @@ __CPI_EXPORT __CPI_NOINLINE
     void __llvm__cpi_assert_bounds_fail() {
 #endif
 #if defined(CPI_NOFAIL) || defined(CPI_BOUNDS_NOFAIL)
-  ++__llvm__cpi_num_fails;
+  if (!__llvm__cpi_num_fails++)
+    fprintf(stderr, "CPI bounds check fail\n");
 #else
 # ifdef CPI_VERBOSE_ERRORS
   fprintf(stderr, "CPI bounds check fail at %s:\n"
                   "val=%p, size=0x%lx, bounds=[0x%lx, 0x%lx]\n",
           loc, val, size, bounds[0], bounds[1]);
-# else
-  fprintf(stderr, "CPI bounds check fail\n");
 # endif
   abort();
 #endif
