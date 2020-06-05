@@ -34,7 +34,7 @@ void __llvm__cpi_realloc(unsigned char *fptr_new, unsigned long size_new,
 #endif
 #ifdef CPI_DELETE_ON_ALLOC
         if (size_new > size_old) // enlarge
-            __llvm__cpi_delete_range(fptr_old + size_new, size_old - size_new);
+            __llvm__cpi_delete_range(fptr_old + size_old, size_new - size_old);
 #endif
     } else { // data was moved
         __llvm__cpi_move_range(fptr_new, fptr_old,
