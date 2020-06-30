@@ -632,11 +632,11 @@ bool CPI::shouldProtectType(Type *Ty, bool IsStore,
     // FIXME: for unknown reason, clang sometimes generates function pointer
     // items in structs as {}* (e.g., in struct _citrus_iconv_ops). However,
     // clang keeps correct TBAA tags even in such cases, so we look at it first.
-    if (IsStore && PTy->getElementType()->isStructTy() &&
+    if (PTy->getElementType()->isStructTy() &&
         cast<StructType>(PTy->getElementType())->getNumElements() == 0 &&
-        TBAATag && TBAATag->getNumOperands() > 1 &&
+        (!TBAATag || TBAATag && TBAATag->getNumOperands() > 1 &&
         cast<MDString>(TBAATag->getOperand(0))->getString() ==
-            "function pointer") {
+            "function pointer")) {
       return true;
     }
 
