@@ -176,7 +176,7 @@ bool SimpleSFI::runOnFunction(Function &F) {
             CastInst::Create(Instruction::BitCast, MaskedPtr, IntPtrTy));
         }
 
-        MaskedPtr = IRB.CreateAnd(MaskedPtr, IRB.getInt64((1ull<<46) - 1));
+        MaskedPtr = IRB.CreateAnd(MaskedPtr, IRB.getInt64((1ull<<45) - 1));
         if (Ty->isPointerTy()) {
           MaskedPtr = IRB.CreateIntToPtr(MaskedPtr, Ptr->getType(),
                                          Twine("masked.") + Ptr->getName());
