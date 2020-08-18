@@ -119,4 +119,5 @@ $ ls -lsah ld.gold
 $ sudo rm ld
 $ sudo ln -s ld.gold ld
 
-
+Note: When CPI_USE_HUGETLB is set, receiving SIGBUS indicates that the system
+has insufficient remaining hugepages to populate the mapping.
