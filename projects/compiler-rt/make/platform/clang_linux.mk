@@ -116,9 +116,9 @@ CFLAGS.cps-i386 := $(CFLAGS) -m32 -fPIE -fno-builtin -g -DNDEBUG \
 CFLAGS.cps-x86_64 := $(CFLAGS) -m64 -fPIE -fno-builtin -g -DNDEBUG \
 		      -fno-exceptions -fno-rtti -fno-cpi -fno-stack-protector -flto
 
-CFLAGS.cpi-i386 := $(CFLAGS) -DCPI_BOUNDS -m32 -fPIE -fno-builtin -g -DNDEBUG \
+CFLAGS.cpi-i386 := $(CFLAGS) -m32 -fPIE -fno-builtin -g -DNDEBUG \
 			-fno-exceptions -fno-rtti -fno-cpi -fno-stack-protector -flto
-CFLAGS.cpi-x86_64 := $(CFLAGS) -DCPI_BOUNDS -m64 -fPIE -fno-builtin -g -DNDEBUG \
+CFLAGS.cpi-x86_64 := $(CFLAGS) -m64 -fPIE -fno-builtin -g -DNDEBUG \
 			  -fno-exceptions -fno-rtti -fno-cpi -fno-stack-protector -flto
 
 RANLIB.cps-i386 := ar -s --plugin=$(dir $(CC))../lib/LLVMgold.so

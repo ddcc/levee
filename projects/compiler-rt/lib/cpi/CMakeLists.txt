@@ -98,7 +98,7 @@ foreach(arch ${CPI_SUPPORTED_ARCH})
     DEPENDS ${CPI_DEPENDS} ${CPI_INLINES})
   add_compiler_rt_bitcode_runtime(clang_rt.cpi-${arch} ${arch}
     SOURCES ${CPI_SOURCES}
-    CFLAGS -DCPI_BOUNDS ${CPI_CFLAGS}
+    CFLAGS ${CPI_CFLAGS}
     DEPENDS ${CPI_DEPENDS} ${CPI_INLINES})
   add_compiler_rt_bitcode_file(clang_rt.cps-inlines ${arch}
     SOURCE ${CPI_INLINES}
@@ -106,6 +106,6 @@ foreach(arch ${CPI_SUPPORTED_ARCH})
     DEPENDS ${CPI_DEPENDS})
   add_compiler_rt_bitcode_file(clang_rt.cpi-inlines ${arch}
     SOURCE ${CPI_INLINES}
-    CFLAGS -DCPI_BOUNDS ${CPI_INLINES_CFLAGS}
+    CFLAGS ${CPI_INLINES_CFLAGS}
     DEPENDS ${CPI_DEPENDS})
 endforeach()

@@ -153,7 +153,7 @@ CFLAGS.cps		:= $(CFLAGS) -fno-rtti -fno-exceptions -fno-builtin \
 			   -fno-cps -fno-stack-protector -flto \
 			   -g -DNDEBUG
 
-CFLAGS.cpi		:= $(CFLAGS) -DCPI_BOUNDS -fno-rtti -fno-exceptions -fno-builtin \
+CFLAGS.cpi		:= $(CFLAGS) -fno-rtti -fno-exceptions -fno-builtin \
     			   -fno-cpi -fno-stack-protector -flto \
 			   -g -DNDEBUG
 
